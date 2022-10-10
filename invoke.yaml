@@ -1,0 +1,6 @@
+container: celsure
+registry: us-docker.pkg.dev
+container_shell: bash
+app: celsure
+image: "solid-range-319205/ensuro/ens-celsure"
+celery_args: "-P solo -c1 --loglevel INFO"

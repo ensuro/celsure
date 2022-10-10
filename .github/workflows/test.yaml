@@ -1,0 +1,21 @@
+name: Run offchain tests
+
+on:
+  push:
+    branches:
+      - "*"
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - run: |
+          cp .env.sample .env.ci
+          docker-compose -f docker-compose.test-image.yml build
+          docker-compose -f docker-compose.test-image.yml up \
+              --exit-code-from webapp \
+              --abort-on-container-exit \
+              --force-recreate

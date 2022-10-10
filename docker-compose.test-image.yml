@@ -1,0 +1,23 @@
+version: "3.4"
+
+# Compose file for testing the images built for production
+
+services:
+
+  webapp:
+    build:
+      context: .
+      args:
+        - APP_ENV=ci
+    env_file:
+      - .env.ci
+    environment:
+      - CELERY_BROKER_URL=memory://
+    command:
+      - /bin/sh
+      - -c
+      - "python manage.py migrate && pytest -v --cov"
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: django

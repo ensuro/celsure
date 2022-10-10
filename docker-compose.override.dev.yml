@@ -1,0 +1,26 @@
+version: "3.4"
+
+services:
+
+  webapp:
+    env_file: .env.dev
+    command: "/bin/sh" #command: ["sh", "-c", "while [ 0 ]; do date; sleep 30 ; done"]
+    stdin_open: true # docker run -i
+    tty: true # docker run -t
+    build:
+      args:
+        APP_ENV: development
+    ports:
+      - 48000:8000
+    volumes:
+      - ./django/:/usr/local/app/
+      - ./:/code
+    environment:
+      - CHROMEDRIVER_HEADLESS="1"
+
+  postgres:
+    environment:
+      POSTGRES_PASSWORD: django
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+      - ./data/pgdump:/pgdump

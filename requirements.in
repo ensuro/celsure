@@ -1,0 +1,10 @@
+django==3.2.*
+gunicorn[gevent]
+environs[django]
+djangorestframework
+psycopg2
+psycogreen
+requests
+rollbar
+django-phonenumber-field[phonenumberslite]
+django-colorfield

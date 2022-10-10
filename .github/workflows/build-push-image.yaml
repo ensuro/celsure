@@ -1,0 +1,30 @@
+name: Build and Push Docker Image to Google Artifact Registry
+
+on:
+  push:
+    branches-ignore:
+      - "*"
+    tags:
+      - v*
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Docker image version tag"
+        required: true
+
+env:
+  IMAGE: solid-range-319205/ensuro/celsure
+  REGISTRY_HOSTNAME: us-docker.pkg.dev
+  TEST_IMAGE_TAG: test
+
+jobs:
+  build-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build and push
+        uses: ensuro/github-actions/build-docker@main
+        with:
+          registry: "${{ env.REGISTRY_HOSTNAME }}"
+          image: "${{ env.IMAGE }}"
+          google_credentials: "${{ secrets.GOOGLE_CREDENTIALS }}"
+          additional_tag: "${{ github.event.inputs.version }}"
