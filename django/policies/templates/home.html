@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container" style="padding-top: 30px;">
+
+    <div class="row justify-content-between">
+        <div class="col-9">
+            <h1>Policies</h1>
+        </div>
+        <div class="col-3">
+            <a href="/new_policy" >
+                <button class="btn btn-primary btn-lg"> + New policy</button>
+            </a>
+        </div>
+    </div>
+    <hr/>
+      
+    <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Model</th>
+            <th scope="col">IMEI</th>
+            <th scope="col">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+            {% for policies in policies %}
+                <tr>
+                    <th scope="row">{{ policies.id }}</th>
+                    <td>{{ policies.model }}</td>
+                    <td>{{ policies.imei }}</td>
+                    <td>{{ policies.status }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

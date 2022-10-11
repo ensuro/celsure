@@ -147,6 +147,8 @@ LOGGING = {
     },
 }
 
+LOGIN_REDIRECT_URL = "/"
+
 if env.str("DJANGO_LOGGING_JSON", None):
     LOGGING = env.json("DJANGO_LOGGING_JSON")
 
