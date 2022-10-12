@@ -37,13 +37,13 @@
                 {% if user.is_authenticated %}
 
                 <li class="nav-item active">
-                    <a class="nav-link active" href="{% url 'login' %}">Logout</a>
+                    <a class="nav-link active" href="{% url 'logout' %}?next=/">Logout</a>
                 </li>
 
                 {% else %}
 
                 <li class="nav-item active">
-                    <a class="nav-link active" href="{% url 'login' %}">Login</a>
+                    <a class="nav-link active" href="{% url 'login' %}?next={{next}}">Login</a>
                 </li>
 
                 {% endif %}

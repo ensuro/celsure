@@ -9,6 +9,7 @@ from .forms import PolicyForm
 from django.contrib.auth.decorators import login_required
 
 
+@login_required
 def get_home(request):
     policies = Policy.objects.filter(status="pending")
     return render(request, "home.html", {"policies": policies})
