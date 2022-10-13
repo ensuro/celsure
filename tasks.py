@@ -1,5 +1,5 @@
-from invoke import task, Collection
-from py_docker_k8s_tasks import docker_tasks, util_tasks, django_tasks
+from invoke import Collection, task
+from py_docker_k8s_tasks import django_tasks, docker_tasks, util_tasks
 from py_docker_k8s_tasks.util_tasks import add_tasks
 
 ns = Collection()
@@ -18,17 +18,9 @@ def run(c, port=8000):
 @task
 def restore_db(c, dbname, dump_file):
     kwargs = dict(container="celsure_postgres_1", workdir="/pgdump", user="postgres")
-    docker_tasks.docker_exec(
-        c, f"dropdb --if-exists {dbname}", **kwargs
-    )
-    docker_tasks.docker_exec(
-        c, f"createdb {dbname}", **kwargs
-    )
-    docker_tasks.docker_exec(
-        c,
-        f"pg_restore -x -Fc -d {dbname} {dump_file}",
-        **kwargs
-    )
+    docker_tasks.docker_exec(c, f"dropdb --if-exists {dbname}", **kwargs)
+    docker_tasks.docker_exec(c, f"createdb {dbname}", **kwargs)
+    docker_tasks.docker_exec(c, f"pg_restore -x -Fc -d {dbname} {dump_file}", **kwargs)
 
 
 @ns.add_task
