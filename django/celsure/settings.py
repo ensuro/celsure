@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "colorfield",
     "policies",
+    "phonenumber_field",
+    "bootstrap5",
 ]
 
 INSTALLED_APPS.extend(env.list("EXTRA_INSTALLED_APPS", []))

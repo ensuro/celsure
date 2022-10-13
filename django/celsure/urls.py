@@ -20,7 +20,7 @@ from policies import views
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("", views.get_home, name="home"),
+    path("", views.PoliciesListView.as_view(), name="home"),
     path("accounts/", include("django.contrib.auth.urls")),
     path("new_policy/", views.new_policy, name="new_policy"),
 ]

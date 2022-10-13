@@ -1,6 +1,11 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
 {% block content %}
+
+{% load bootstrap5 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+{% bootstrap_messages %}
 
 <div class="container" style="padding-top: 30px;">
 
@@ -15,7 +20,7 @@
         </div>
     </div>
     <hr/>
-      
+
     <table class="table">
         <thead>
           <tr>
@@ -26,15 +31,20 @@
           </tr>
         </thead>
         <tbody>
-            {% for policies in policies %}
+            {% for policy in object_list %}
                 <tr>
-                    <th scope="row">{{ policies.id }}</th>
-                    <td>{{ policies.model }}</td>
-                    <td>{{ policies.imei }}</td>
-                    <td>{{ policies.status }}</td>
+                    <th scope="row">{{ policy.id }}</th>
+                    <td>{{ policy.model }}</td>
+                    <td>{{ policy.imei }}</td>
+                    <td>{{ policy.status }}</td>
                 </tr>
             {% endfor %}
         </tbody>
     </table>
+
+    <div class="d-flex justify-content-center">
+        {% bootstrap_pagination page_obj %}
+    </div>
 </div>
+
 {% endblock %}

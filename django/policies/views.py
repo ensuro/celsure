@@ -1,18 +1,25 @@
 import datetime
-from django.shortcuts import render
-from django.http import HttpResponseRedirect
-from django.utils import timezone
 from decimal import Decimal
 
-from .models import Policy
-from .forms import PolicyForm
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import render
+from django.utils import timezone
+from django.views.generic.list import ListView
+
+from .forms import PolicyForm
+from .models import Policy
 
 
-@login_required
-def get_home(request):
-    policies = Policy.objects.filter(status="pending")
-    return render(request, "home.html", {"policies": policies})
+class PoliciesListView(LoginRequiredMixin, ListView):
+
+    model = Policy
+    paginate_by = 10  # if pagination is desired
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["now"] = timezone.now()
+        return context
 
 
 @login_required

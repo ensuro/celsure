@@ -2,60 +2,23 @@
 
 {% block content %}
 
-<div class="container">
+{% load bootstrap5 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+{% bootstrap_messages %}
+
+  <div class="container">
+
     <form class="mt-5" method="post" action="{% url 'new_policy' %}">
-        {% csrf_token %}
-        <h1 class="text-center my-5">New policy</h1>
-        <div class="d-flex justify-content-center">
-            <table class="table table-borderless" style="width: 40%;">
-                <thead>
-                    <th scope="col"></th>
-                    <th scope="col"></th>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td class="h4">{{form.model.label}}:</td>
-                        <td>{{form.model}}</td>
-                    </tr>
-                    <tr>
-                        <td class="h4">{{form.phone_color.label}}:</td>
-                        <td>
-                            <div>
-                                <input id="cp1" type="text" class="form-control input-lg" value={{form.phone_color}} />
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="h4">{{form.imei.label}}:</td>
-                        <td>{{form.imei}}</td>
-                        {% if form.errors.imei %}
-                        <td style="color:#FF0000";>
-                            {{ form.errors.imei }}
-                        </td>
-                        {% endif %}
-                    </tr>
-
-                    <tr>
-                        <td class="h4">{{form.phone_number.label}}:</td>
-                        <td>{{form.phone_number}}</td>
-                        {% if form.errors.phone_number %}
-                        <td style="color:#FF0000";>
-                            {{ form.errors.phone_number }}
-                        </td>
-                        {% endif %}
-                    </tr>
-                    <tr>
-                        <td class="h4">{{form.email.label}}:</td>
-                        <td aria-placeholder="email2" data-text="email">{{form.email}}</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        {% comment %} {{ form.as_p }} {% endcomment %}
-        <div class="d-flex justify-content-center">
-            <input type="submit" class="btn btn-primary btn-lg" value="Create" />
-        </div>
+      {% csrf_token %}
+      <h1 class="text-center my-5">New policy</h1>
+      {% bootstrap_form form %}
+      {% buttons %}
+        <button type="submit" class="btn btn-primary btn-lg">
+          Create
+        </button>
+      {% endbuttons %}
     </form>
-</div>
+  </div>
+
 {% endblock %}
