@@ -17,7 +17,8 @@ services:
       - ./:/code
     environment:
       - CHROMEDRIVER_HEADLESS="1"
-
+    depends_on:
+      - "postgres"
   postgres:
     environment:
       POSTGRES_PASSWORD: django
