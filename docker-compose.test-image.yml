@@ -16,11 +16,10 @@ services:
     command:
       - /bin/sh
       - -c
-      - "python manage.py migrate && pytest -v --cov"
+      - "sleep 5 && python manage.py migrate && pytest -v --cov"
     depends_on:
       - "postgres"
   postgres:
-    container_name: postgres
     image: postgres
     environment:
       POSTGRES_PASSWORD: django
