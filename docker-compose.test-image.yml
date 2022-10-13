@@ -18,6 +18,7 @@ services:
       - -c
       - "python manage.py migrate && pytest -v --cov"
   postgres:
+    container_name: postgres
     image: postgres
     environment:
       POSTGRES_PASSWORD: django
