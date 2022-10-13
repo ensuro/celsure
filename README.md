@@ -1,6 +1,6 @@
 # Celsure
 
-This repository manages the collection of data and the workflow for cel phone insurance. 
+This repository manages the collection of data and the workflow for cel phone insurance.
 It's developed using Django and Postgresql as a database.
 
 ## Requirements

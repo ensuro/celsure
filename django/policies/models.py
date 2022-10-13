@@ -1,8 +1,8 @@
-from django.db import models
+from colorfield.fields import ColorField
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
-from colorfield.fields import ColorField
 
 
 # Took from https://github.com/mmcloughlin/luhn/blob/master/luhn.py
@@ -25,19 +25,19 @@ def luhn_verify(string):
     >>> verify('534618613411236')
     False
     """
-    return (luhn_checksum(string) == 0)
+    return luhn_checksum(string) == 0
 
 
 def validate_imei(value):
     if len(value) != 15 or not value.isdigit():
         raise ValidationError(
-            '%(value)s is not a valid IMEI, must be 15 digits',
-            params={'value': value},
+            "%(value)s is not a valid IMEI, must be 15 digits",
+            params={"value": value},
         )
     if not luhn_verify(value):
         raise ValidationError(
-            '%(value)s is not a valid IMEI - check the number again',
-            params={'value': value},
+            "%(value)s is not a valid IMEI - check the number again",
+            params={"value": value},
         )
 
 
@@ -61,7 +61,7 @@ class Model(models.Model):
 
 STATUS_CHOICES = (
     ("pending", "Pending"),  # Initial status, not yet confirmed by the user + payment of the premium
-    ("confirmed", "Confirmed"),   # Confirmed by the user
+    ("confirmed", "Confirmed"),  # Confirmed by the user
     ("active", "Active"),  # Policy created on Ensuro side
     ("expired", "Expired"),  # Policy expired, no longer claimable
     ("claimed", "Claim process started"),
@@ -74,16 +74,16 @@ STATUS_CHOICES = (
 
 class Policy(models.Model):
     model = models.ForeignKey(
-        Model, on_delete=models.PROTECT, related_name="policies",
-        help_text="Choose a brand/model from the supported ones"
+        Model,
+        on_delete=models.PROTECT,
+        related_name="policies",
+        help_text="Choose a brand/model from the supported ones",
     )
     imei = models.CharField(
-        max_length=15, validators=[validate_imei],
-        help_text="15 digit IMEI number that identifies the phone"
+        max_length=15, validators=[validate_imei], help_text="15 digit IMEI number that identifies the phone"
     )
     phone_number = PhoneNumberField(
-        blank=False,
-        help_text="Phone number of the user, it will be used to confirm the data with the user"
+        blank=False, help_text="Phone number of the user, it will be used to confirm the data with the user"
     )
     email = models.EmailField(max_length=254, blank=True)
     phone_color = ColorField(help_text="Select the color of the phone cover")
@@ -93,8 +93,7 @@ class Policy(models.Model):
     expiration = models.DateTimeField()
 
     status = models.CharField(
-        max_length=20, choices=STATUS_CHOICES, default="pending",
-        help_text="Tracks the status of the policy"
+        max_length=20, choices=STATUS_CHOICES, default="pending", help_text="Tracks the status of the policy"
     )
     # TODO: ensuro_id and/or hash and/or quote
 
@@ -102,10 +101,12 @@ class Policy(models.Model):
 class PolicyActivity(models.Model):
     policy = models.ForeignKey(Policy, on_delete=models.CASCADE, related_name="activities")
     status_from = models.CharField(
-        max_length=20, choices=STATUS_CHOICES,
+        max_length=20,
+        choices=STATUS_CHOICES,
     )
     status_to = models.CharField(
-        max_length=20, choices=STATUS_CHOICES,
+        max_length=20,
+        choices=STATUS_CHOICES,
     )
     timestamp = models.DateTimeField(auto_now=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)

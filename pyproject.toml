@@ -1,0 +1,12 @@
+[tool.black]
+line-length = 110
+
+[tool.isort]
+profile = "black"
+known_first_party = [
+    "celsure",
+    "policies"
+]
+
+# Force django imports up
+known_third_party = ["django"]
