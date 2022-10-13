@@ -7,16 +7,18 @@
 {% bootstrap_javascript %}
 {% bootstrap_messages %}
 
-  <div class="container">
+  <div class="container d-flex justify-content-center">
 
     <form class="mt-5" method="post" action="{% url 'new_policy' %}">
       {% csrf_token %}
       <h1 class="text-center my-5">New policy</h1>
       {% bootstrap_form form %}
       {% buttons %}
+      <div class="d-flex justify-content-center">
         <button type="submit" class="btn btn-primary btn-lg">
           Create
         </button>
+      </div>
       {% endbuttons %}
     </form>
   </div>

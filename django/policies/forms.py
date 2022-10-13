@@ -8,9 +8,7 @@ class PolicyForm(forms.ModelForm):
         model = Policy
         widgets = {
             "model": forms.Select(attrs={"class": "form-control"}),
-            "phone_color": forms.CharField(
-                label="hex_color", max_length=7, widget=forms.TextInput(attrs={"type": "color"})
-            ),
+            "phone_color": forms.TextInput(attrs={"class": "form-control colorfield_field jscolor"}),
             "imei": forms.TextInput(attrs={"class": "form-control", "placeholder": "Enter IMEI here"}),
             "phone_number": forms.TextInput(
                 attrs={"class": "form-control", "placeholder": "Enter phone number here"}
