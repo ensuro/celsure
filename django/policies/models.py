@@ -73,6 +73,18 @@ STATUS_CHOICES = (
 
 
 class Policy(models.Model):
+    COLOR_PALETTE = [
+        ("#FFFFFF", "white"),
+        ("#000000", "black"),
+        ("#808080", "gray"),
+        ("#000000" "black"),
+        ("#FF0000", "red"),
+        ("#FFC0CB", "pink"),
+        ("#000080", "navy"),
+        ("#008080", "teal"),
+        ("#00FF00", "green"),
+    ]
+
     model = models.ForeignKey(
         Model,
         on_delete=models.PROTECT,
@@ -86,7 +98,7 @@ class Policy(models.Model):
         blank=False, help_text="Phone number of the user, it will be used to confirm the data with the user"
     )
     email = models.EmailField(max_length=254, blank=True)
-    phone_color = ColorField(help_text="Select the color of the phone cover")
+    phone_color = ColorField(samples=COLOR_PALETTE, help_text="Select the color of the phone cover")
     premium = models.DecimalField(decimal_places=2, max_digits=12)
     payout = models.DecimalField(decimal_places=2, max_digits=12)
 
