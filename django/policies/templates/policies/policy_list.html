@@ -27,6 +27,7 @@
             <th scope="col">#</th>
             <th scope="col">Model</th>
             <th scope="col">IMEI</th>
+            <th scope="col">Phone Number</th>
             <th scope="col">Status</th>
           </tr>
         </thead>
@@ -36,6 +37,7 @@
                     <th scope="row">{{ policy.id }}</th>
                     <td>{{ policy.model }}</td>
                     <td>{{ policy.imei }}</td>
+                    <td>{{ policy.phone_number }}</td>
                     <td>{{ policy.status }}</td>
                 </tr>
             {% endfor %}
