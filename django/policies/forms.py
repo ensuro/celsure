@@ -7,7 +7,9 @@ class PolicyForm(forms.ModelForm):
     class Meta:
         model = Policy
         widgets = {
-            "model": forms.Select(attrs={"class": "form-control "}),
+            "model": forms.Select(
+                attrs={"class": "form-control form-select selectpicker", "data-live-search": "true"}
+            ),
             "phone_color": forms.TextInput(attrs={"class": "form-control colorfield_field jscolor"}),
             "imei": forms.TextInput(attrs={"class": "form-control", "placeholder": "Enter IMEI here"}),
             "phone_number": forms.TextInput(
