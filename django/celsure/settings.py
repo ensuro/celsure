@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "colorfield",
     "policies",
+    "phonenumber_field",
+    "bootstrap5",
 ]
 
 INSTALLED_APPS.extend(env.list("EXTRA_INSTALLED_APPS", []))
@@ -146,6 +148,8 @@ LOGGING = {
         "level": env.str("DJANGO_LOG_LEVEL", "INFO" if DEBUG else "WARNING"),
     },
 }
+
+LOGIN_REDIRECT_URL = "/"
 
 if env.str("DJANGO_LOGGING_JSON", None):
     LOGGING = env.json("DJANGO_LOGGING_JSON")

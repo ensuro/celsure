@@ -15,6 +15,8 @@ dj-database-url==1.0.0
 dj-email-url==1.0.6
     # via environs
 django==3.2.16
+    # via gevent
+django-bootstrap-v5==1.0.11
     # via
     #   -r requirements.in
     #   dj-database-url
@@ -73,7 +75,6 @@ urllib3==1.26.12
 zope-event==4.5.0
     # via gevent
 zope-interface==5.5.0
-    # via gevent
-
+    # via -r requirements.in
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools

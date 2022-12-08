@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% load bootstrap5 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+{% bootstrap_messages %}
+
+<div class="container" style="padding-top: 30px;">
+
+    <div class="row justify-content-between">
+        <div class="col-9">
+            <h1>Policies</h1>
+        </div>
+        <div class="col-3">
+            <a href="/new_policy" >
+                <button class="btn btn-primary btn-lg"> + New policy</button>
+            </a>
+        </div>
+    </div>
+    <br/>
+
+    <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Model</th>
+            <th scope="col">IMEI</th>
+            <th scope="col">Phone Number</th>
+            <th scope="col">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+            {% for policy in object_list %}
+                <tr>
+                    <th scope="row">{{ policy.id }}</th>
+                    <td>{{ policy.model }}</td>
+                    <td>{{ policy.imei }}</td>
+                    <td>{{ policy.phone_number }}</td>
+                    <td>{{ policy.status }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="d-flex justify-content-center">
+        {% bootstrap_pagination page_obj %}
+    </div>
+</div>
+
+{% endblock %}
