@@ -8,10 +8,13 @@ from . import PrintMixin
 
 
 class Command(PrintMixin, BaseCommand):
-    help = "Loads the brands and models"
+    help = "Loads the brands and models from a CSV file"
+
+    def add_arguments(self, parser):
+        parser.add_argument("filename", type=str, help="CSV file to load")
 
     def handle(self, *args, **options):
-        with open("policies/data/PhoneFixPricelist.csv") as file:
+        with open(options["filename"], "rt") as file:
             reader = csv.reader(file)
             next(reader)  # Advance past the header
 

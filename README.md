@@ -37,6 +37,15 @@ To initialize your local database (inside `inv shell`):
 
 Then you can start the development server (`inv django`) and browse to the Django Admin: http://localhost:38000/admin/
 
+## Load pricing from CSV
+
+There's a command to load the prices from a csv file. A sample CSV is provided in `django/policies/data/PhoneFixPricelist.csv`:
+
+```
+inv shell
+./manage.py loadmodels policies/data/PhoneFixPricelist.csv
+```
+
 ## Contributing
 
 Thank you for your interest in Ensuro! Head over to our [Contributing Guidelines](CONTRIBUTING.md) for instructions on how to sign our Contributors Agreement and get started with
