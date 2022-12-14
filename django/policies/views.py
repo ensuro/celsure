@@ -1,6 +1,3 @@
-import datetime
-from decimal import Decimal
-
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render
@@ -28,12 +25,7 @@ def new_policy(request):
         form = PolicyForm(request.POST)
 
         if form.is_valid():
-            post = form.save(commit=False)
-            post.premium = Decimal(10)
-            post.payout = Decimal(100)
-            post.expiration = timezone.now() + datetime.timedelta(days=int(10))
-            post.status = "pending"
-            post.save()
+            form.save()
             return render(request, "feedback/policy_created.html")
 
     else:

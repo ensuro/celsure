@@ -54,23 +54,18 @@ def test_create_new_policy_form(client, django_user_model):
     model = Model.objects.get(name="Testing1")
     url = reverse("new_policy")
 
-    # form = PolicyForm(
-    #     data={
-    #         "model": model.code,
-    #         "phone_color": "#000000",
-    #         "imei": "356938035643809",
-    #         "phone_number": "+541112345678",
-    #     }
-    # )
     data = {
         "model": model.code,
         "phone_color": "#000000",
         "imei": "356938035643809",
         "phone_number": "+541112345678",
+        "expiration": "2022-12-14T16:57:08.727839Z",
     }
-    # assert form.is_valid()
 
     response = client.post(url, data, follow=True)
     assert response.status_code == 200
     assertTemplateUsed(response, "feedback/policy_created.html")
     assert Policy.objects.count() == 1
+
+    policy = Policy.objects.get()
+    assert policy.payout == model.fix_price
