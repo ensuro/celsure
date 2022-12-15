@@ -1,8 +1,8 @@
-from decimal import Decimal
-
 from django import forms
+from django.shortcuts import get_object_or_404
 
-from .models import Policy
+from .models import Model, Policy
+from .quote import get_quote
 
 
 class PolicyForm(forms.ModelForm):
@@ -24,11 +24,27 @@ class PolicyForm(forms.ModelForm):
 
     def save(self, commit=True) -> Policy:
         ret: Policy = super().save(commit=False)
-        ret.premium = Decimal(10)  # TODO: get premium from api
         ret.payout = ret.model.fix_price
         ret.status = "pending"
+
+        quote = get_quote(ret.payout, ret.expiration, signed=False)
+        ret.quote = quote
+        ret.premium = quote["premium"]
 
         if commit:
             ret.save()
 
         return ret
+
+
+class PricingForm(forms.Form):
+
+    model = forms.CharField()
+    expiration = forms.DateTimeField()
+
+    def clean_model(self):
+        model_code = self.cleaned_data["model"]
+        return get_object_or_404(Model, code=model_code)
+
+    def get_quote(self):
+        return get_quote(self.cleaned_data["model"].fix_price, self.cleaned_data["expiration"], signed=False)

@@ -1,11 +1,17 @@
+import logging
+
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import HttpResponseNotAllowed, JsonResponse
 from django.shortcuts import render
 from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.list import ListView
 
-from .forms import PolicyForm
+from .forms import PolicyForm, PricingForm
 from .models import Policy
+
+logger = logging.getLogger(__name__)
 
 
 class PoliciesListView(LoginRequiredMixin, ListView):
@@ -31,3 +37,21 @@ def new_policy(request):
     else:
         form = PolicyForm()
     return render(request, "policies/new_policy.html", {"form": form})
+
+
+# @login_required
+@csrf_exempt
+def price_policy(request):
+    if request.method == "GET":
+
+        form = PricingForm(request.GET)
+        if form.is_valid():
+            logger.info(form.cleaned_data)
+
+            return JsonResponse(form.get_quote())
+
+        response = JsonResponse(form.errors)
+        response.status_code = 400
+        return response
+
+    return HttpResponseNotAllowed(["POST"])
