@@ -6,22 +6,8 @@ from django.utils.http import urlencode
 from pytest_django.asserts import assertRedirects, assertTemplateUsed
 from responses import matchers
 
-from policies.models import Brand, Model, Policy
-
-
-@pytest.fixture
-@pytest.mark.django_db
-def model():
-    # Create brand
-    brand = Brand.objects.create(code="Brand-0", name="Phone Brand")
-    brand.save()
-
-    # Create model
-    model = Model.objects.create(brand=brand, name="Testing1", code="Phone Brand-Testing1", fix_price=100)
-    model.save()
-
-    model.refresh_from_db()
-    return model
+from policies.factories import Model as ModelFactory
+from policies.models import Policy
 
 
 @pytest.fixture
@@ -104,7 +90,8 @@ def create_quote_response(model, expiration):
 
 
 @pytest.mark.django_db
-def test_new_policy_form_post(client, model, logged_in_user, settings_pricing):
+def test_new_policy_form_post(client, logged_in_user, settings_pricing):
+    model = ModelFactory()
     # Request to the dynamic pricing api
     expiration = "2022-12-14T16:57:08.727839+00:00"
     quote = create_quote_response(model, expiration)
@@ -130,8 +117,9 @@ def test_new_policy_form_post(client, model, logged_in_user, settings_pricing):
 
 
 @pytest.mark.django_db
-def test_price_policy(client, model, logged_in_user, settings_pricing):
+def test_price_policy(client, logged_in_user, settings_pricing):
     expiration = "2022-12-14T16:57:08.727839+00:00"
+    model = ModelFactory()
     quote = create_quote_response(model, expiration)
 
     response = client.get(
