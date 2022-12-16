@@ -3,6 +3,7 @@ pytest
 pytest-django
 pytest-mock
 pytest-cov
+pytest-responses
 factory_boy
 freezegun
 colorama
