@@ -1,5 +1,4 @@
 <!-- prettier-ignore -->
-
 {% extends "base.html" %}
 
 {% block content %}
@@ -14,50 +13,67 @@
     <h1 class="text-center my-5">New policy</h1>
   </div>
   <div class="row">
-    <div class="col"></div>
-    <div class="col-md-8">
+    <div class="col-md-8 offset-md-2">
       <form class="mt-5" method="post" action="{% url 'new_policy' %}">
-        {% csrf_token %} {% bootstrap_form form %} {% buttons %}
-        <div class="d-flex justify-content-center">
-          <button type="submit" class="btn btn-primary btn-lg">Create</button>
+        <div class="row">
+          <div class="col-md-8">
+            <!-- prettier-ignore -->
+            {% csrf_token %}
+            {% bootstrap_form form %}
+          </div>
+          <div class="col-md-3">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Policy price</h5>
+                <p class="card-text pricing-result"></p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-12">
+            <div class="d-flex justify-content-center">
+              {% buttons %}
+              <button type="submit" class="btn btn-primary btn-lg">
+                Create
+              </button>
+              {% endbuttons %}
+            </div>
+          </div>
         </div>
-        {% endbuttons %}
       </form>
     </div>
-    <div class="card col" style="width: 18rem; height: 10%">
-      <div class="card-body">
-        <h5 class="card-title">Policy price</h5>
-        <p class="card-text pricing-result"></p>
-      </div>
-    </div>
   </div>
-
-  <script>
-    $("#id_model").on("change", updatePricing);
-    $("#id_expiration").on("change", updatePricing);
-
-    function updatePricing() {
-      const model = $("#id_model").val();
-      const expiration = $("#id_expiration").val();
-
-      if (model && expiration) {
-        pricePolicy(model, expiration)
-          .then((quote) => {
-            $(".pricing-result").text(
-              Number(quote.premium).toLocaleString(undefined, {
-                style: "currency",
-                currency: "USD",
-              })
-            );
-          })
-          .catch((e) => console.error(e));
-      } else {
-        $(".pricing-result").text("Enter model and expiration.");
-      }
-    }
-
-    updatePricing();
-  </script>
+  <div class="row"></div>
 </div>
+
+<script>
+  $("#id_model").on("change", updatePricing);
+  $("#id_expiration").on("change", updatePricing);
+
+  function updatePricing() {
+    const model = $("#id_model").val();
+    const expiration = $("#id_expiration").val();
+
+    if (model && expiration) {
+      pricePolicy(model, expiration)
+        .then((quote) => {
+          const premium =
+            quote.premium === null
+              ? quote.premium_details.minimum_premium
+              : quote.premium;
+          $(".pricing-result").text(
+            Number(premium).toLocaleString(undefined, {
+              style: "currency",
+              currency: "USD",
+            })
+          );
+        })
+        .catch((e) => console.error(e));
+    } else {
+      $(".pricing-result").text("Enter model and expiration.");
+    }
+  }
+
+  updatePricing();
+</script>
 
 {% endblock %}
