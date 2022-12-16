@@ -1,3 +1,5 @@
+<!-- prettier-ignore -->
+
 {% extends "base.html" %}
 
 {% block content %}
@@ -7,20 +9,55 @@
 {% bootstrap_javascript %}
 {% bootstrap_messages %}
 
-  <div class="container d-flex justify-content-center">
-
-    <form class="mt-5" method="post" action="{% url 'new_policy' %}">
-      {% csrf_token %}
-      <h1 class="text-center my-5">New policy</h1>
-      {% bootstrap_form form %}
-      {% buttons %}
-      <div class="d-flex justify-content-center">
-        <button type="submit" class="btn btn-primary btn-lg">
-          Create
-        </button>
-      </div>
-      {% endbuttons %}
-    </form>
+<div class="container d-flex flex-column justify-content-center">
+  <div class="row">
+    <h1 class="text-center my-5">New policy</h1>
   </div>
+  <div class="row">
+    <div class="col"></div>
+    <div class="col-md-8">
+      <form class="mt-5" method="post" action="{% url 'new_policy' %}">
+        {% csrf_token %} {% bootstrap_form form %} {% buttons %}
+        <div class="d-flex justify-content-center">
+          <button type="submit" class="btn btn-primary btn-lg">Create</button>
+        </div>
+        {% endbuttons %}
+      </form>
+    </div>
+    <div class="card col" style="width: 18rem; height: 10%">
+      <div class="card-body">
+        <h5 class="card-title">Policy price</h5>
+        <p class="card-text pricing-result"></p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    $("#id_model").on("change", updatePricing);
+    $("#id_expiration").on("change", updatePricing);
+
+    function updatePricing() {
+      const model = $("#id_model").val();
+      const expiration = $("#id_expiration").val();
+
+      if (model && expiration) {
+        pricePolicy(model, expiration)
+          .then((quote) => {
+            $(".pricing-result").text(
+              Number(quote.premium).toLocaleString(undefined, {
+                style: "currency",
+                currency: "USD",
+              })
+            );
+          })
+          .catch((e) => console.error(e));
+      } else {
+        $(".pricing-result").text("Enter model and expiration.");
+      }
+    }
+
+    updatePricing();
+  </script>
+</div>
 
 {% endblock %}
