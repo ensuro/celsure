@@ -21,3 +21,4 @@ venv
 django/.coverage
 django/staticfiles
 sendgrid.env
+**/.DS_Store

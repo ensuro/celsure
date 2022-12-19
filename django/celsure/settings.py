@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     "policies",
     "phonenumber_field",
     "bootstrap5",
+    "oauthlib",
+    "oauth2_provider",
 ]
 
 INSTALLED_APPS.extend(env.list("EXTRA_INSTALLED_APPS", []))
@@ -177,3 +179,11 @@ if ROLLBAR_TOKEN:
 DYNAMIC_PRICING_URL = env.str("DYNAMIC_PRICING_URL", None)
 if DYNAMIC_PRICING_URL:
     DYNAMIC_PRICING_API_KEY = env.str("DYNAMIC_PRICING_API_KEY")
+
+
+# Motionscloud API
+MOTIONSCLOUD_BASE_URL = env.str("MOTIONSCLOUD_BASE_URL", "https://ensuro-qa.motionscloud.com")
+MOTIONSCLOUD_API_URL = env.str("MOTIONSCLOUD_API_URL", "https://ensuro-qa.motionscloud.com/api/v1")
+
+MOTIONSCLOUD_CLIENT_ID = env.str("MOTIONSCLOUD_CLIENT_ID")
+MOTIONSCLOUD_CLIENT_SECRET = env.str("MOTIONSCLOUD_CLIENT_SECRET")
