@@ -169,3 +169,8 @@ if ROLLBAR_TOKEN:
     import rollbar
 
     rollbar.init(**ROLLBAR)
+
+
+DYNAMIC_PRICING_URL = env.str("DYNAMIC_PRICING_URL", None)
+if DYNAMIC_PRICING_URL:
+    DYNAMIC_PRICING_API_KEY = env.str("DYNAMIC_PRICING_API_KEY")

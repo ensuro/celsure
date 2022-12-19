@@ -107,7 +107,8 @@ class Policy(models.Model):
     status = models.CharField(
         max_length=20, choices=STATUS_CHOICES, default="pending", help_text="Tracks the status of the policy"
     )
-    # TODO: ensuro_id and/or hash and/or quote
+
+    quote = models.JSONField(null=True)
 
 
 class PolicyActivity(models.Model):
