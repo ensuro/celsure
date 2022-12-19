@@ -6,6 +6,8 @@ from django.conf import settings
 from django.utils import timezone
 from oauth2_provider.models import AccessToken
 
+TOKEN = None
+
 
 @dataclass
 class Inspection:
@@ -44,41 +46,34 @@ def authenticate():
     return create_access_token(response.json())
 
 
-class MotionsCloud:
-    token = None
+def get_authenticated_session():
+    global TOKEN
+    if not TOKEN or TOKEN.is_expired():
+        TOKEN = authenticate()
 
-    def __init__(self):
-        self.token = authenticate()
+    session = requests.Session()
+    session.headers.update({"Authorization": f"Bearer {TOKEN}"})
+    return session
 
-    def request_inspection(self, phone_status, phone_number, imei_number, brand, description=""):
-        if self.token.is_expired():
-            self.token = authenticate()
 
-        response = requests.post(
-            f"{settings.MOTIONSCLOUD_API_URL}/phone_inspections/case",
-            headers={
-                "Authorization": f"Bearer {self.token.token}",
-            },
-            json={
-                "phone_status": phone_status,
-                "phone_number": phone_number,
-                "imei_number": imei_number,
-                "brand": brand,
-                "description": description,
-            },
-        )
-        response.raise_for_status()
-        return Inspection.from_json(response.json())
+def request_inspection(session, phone_status, phone_number, imei_number, brand, description=""):
+    response = session.post(
+        f"{settings.MOTIONSCLOUD_API_URL}/phone_inspections/case",
+        json={
+            "phone_status": phone_status,
+            "phone_number": phone_number,
+            "imei_number": imei_number,
+            "brand": brand,
+            "description": description,
+        },
+    )
+    response.raise_for_status()
+    return Inspection.from_json(response.json())
 
-    def get_inspection(self, uuid):
-        if self.token.is_expired():
-            self.token = authenticate()
 
-        response = requests.get(
-            f"{settings.MOTIONSCLOUD_API_URL}/phone_inspections/assessment?uuid={uuid}",
-            headers={
-                "Authorization": f"Bearer {self.token.token}",
-            },
-        )
-        response.raise_for_status()
-        return Inspection.from_json(response.json())
+def get_inspection(session, uuid):
+    response = session.get(
+        f"{settings.MOTIONSCLOUD_API_URL}/phone_inspections/assessment?uuid={uuid}",
+    )
+    response.raise_for_status()
+    return Inspection.from_json(response.json())

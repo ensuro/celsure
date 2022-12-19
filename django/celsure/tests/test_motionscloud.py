@@ -7,7 +7,7 @@ from celsure import motionscloud
 @pytest.fixture(scope="module")
 def vcr_config():
     return {
-        "match_on": ["json_rpc_body", "uri_regex"],
+        "match_on": ["api_body", "uri_regex"],
         "allow_playback_repeats": True,
         "filter_headers": [("Authorization", "DUMMY")],
     }
@@ -15,18 +15,12 @@ def vcr_config():
 
 @pytest.mark.vcr
 @pytest.mark.block_network
-def test_authenticate():
-    m = motionscloud.MotionsCloud()
-    token = m.token
-    assert token is not None
-
-
-@pytest.mark.vcr
-@pytest.mark.block_network
 @pytest.mark.django_db
 def test_request_inspection():
-    m = motionscloud.MotionsCloud()
-    inspection = m.request_inspection(
+    # m = motionscloud.MotionsCloud()
+    s = motionscloud.get_authenticated_session()
+    inspection = motionscloud.request_inspection(
+        session=s,
         phone_status="functional",
         phone_number=1234567890,
         imei_number="123456789012345",
@@ -42,7 +36,8 @@ def test_request_inspection():
     assert inspection.phone_inspections[1]["kind"] == "after_repaired"
     assert inspection.phone_inspections[1]["imei_number"] == "123456789012345"
 
-    inspection = m.request_inspection(
+    inspection = motionscloud.request_inspection(
+        session=s,
         phone_status="not_functional",
         phone_number=1234567890,
         imei_number="123456789012345",
@@ -55,7 +50,8 @@ def test_request_inspection():
     assert inspection.phone_inspections[0]["kind"] == "after_repaired"
     assert inspection.phone_inspections[0]["imei_number"] == "123456789012345"
 
-    inspection = m.request_inspection(
+    inspection = motionscloud.request_inspection(
+        session=s,
         phone_status="policy_purchase",
         phone_number=1234567890,
         imei_number="123456789012345",
@@ -66,7 +62,8 @@ def test_request_inspection():
     assert inspection.phone_inspections[0]["imei_number"] == "123456789012345"
 
     with pytest.raises(HTTPError):
-        inspection = m.request_inspection(
+        inspection = motionscloud.request_inspection(
+            session=s,
             phone_status="invalid_status",
             phone_number=1234567890,
             imei_number="123456789012345",
