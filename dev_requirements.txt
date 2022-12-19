@@ -89,6 +89,8 @@ pytest-django==4.5.2
     # via -r dev_requirements.in
 pytest-mock==3.10.0
     # via -r dev_requirements.in
+pytest-recording==0.12.1
+    # via -r dev_requirements.in
 pytest-responses==0.5.1
     # via -r dev_requirements.in
 python-dateutil==2.8.2
