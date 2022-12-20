@@ -19,4 +19,5 @@ venv
 
 .coverage
 django/.coverage
+django/staticfiles
 sendgrid.env
