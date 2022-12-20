@@ -70,3 +70,25 @@ def test_request_inspection():
             brand="Apple",
         )
         assert inspection.status_code == 400
+
+
+@pytest.mark.vcr
+@pytest.mark.block_network
+@pytest.mark.django_db
+def test_get_inspection():
+    s = motionscloud.get_authenticated_session()
+    i = motionscloud.request_inspection(
+        session=s,
+        phone_status="functional",
+        phone_number=1234567890,
+        imei_number="123456789012345",
+        brand="Apple",
+    )
+
+    inspection = motionscloud.get_inspection(session=s, uuid=i.uuid)
+    assert inspection.uuid == i.uuid
+    assert inspection.phone_inspections == i.phone_inspections
+
+    with pytest.raises(HTTPError):
+        inspection = motionscloud.get_inspection(session=s, uuid="invalid_uuid")
+        assert inspection.status_code == 404
