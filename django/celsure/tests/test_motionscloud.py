@@ -9,6 +9,7 @@ def vcr_config():
     return {
         "match_on": ["api_body", "uri_regex"],
         "allow_playback_repeats": True,
+        "filter_post_data_parameters": [("client_id", "ID_TEST"), ("client_secret", "SECRET_TEST")],
         "filter_headers": [("Authorization", "DUMMY")],
     }
 
@@ -17,7 +18,6 @@ def vcr_config():
 @pytest.mark.block_network
 @pytest.mark.django_db
 def test_request_inspection():
-    # m = motionscloud.MotionsCloud()
     s = motionscloud.get_authenticated_session()
     inspection = motionscloud.request_inspection(
         session=s,
