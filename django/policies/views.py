@@ -30,8 +30,9 @@ def new_policy(request):
         form = PolicyForm(request.POST)
 
         if form.is_valid():
-            form.save()
-            return render(request, "feedback/policy_created.html")
+            policy = form.save()
+            web_url = policy.data["phone_inspections"][0]["web_url"]
+            return render(request, "feedback/policy_created.html", {"web_url": web_url})
 
     else:
         form = PolicyForm()

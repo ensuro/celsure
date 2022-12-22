@@ -1,8 +1,10 @@
 from colorfield.fields import ColorField
-from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
+from django_fsm import FSMField, transition
 from phonenumber_field.modelfields import PhoneNumberField
+
+from celsure import motionscloud
 
 
 # Took from https://github.com/mmcloughlin/luhn/blob/master/luhn.py
@@ -103,24 +105,17 @@ class Policy(models.Model):
     payout = models.DecimalField(decimal_places=2, max_digits=12)
 
     expiration = models.DateTimeField()
-
-    status = models.CharField(
-        max_length=20, choices=STATUS_CHOICES, default="pending", help_text="Tracks the status of the policy"
-    )
+    status = FSMField(default="pending")
 
     quote = models.JSONField(null=True)
+    data = models.JSONField(default=dict)
 
+    @transition(field=status, source="pending", target="policy_requested")
+    def policy_request(self):
+        session = motionscloud.get_authenticated_session()
+        m = motionscloud.request_inspection(
+            session, "policy_purchase", self.phone_number.as_e164, self.imei, self.model.brand.name
+        )
 
-class PolicyActivity(models.Model):
-    policy = models.ForeignKey(Policy, on_delete=models.CASCADE, related_name="activities")
-    status_from = models.CharField(
-        max_length=20,
-        choices=STATUS_CHOICES,
-    )
-    status_to = models.CharField(
-        max_length=20,
-        choices=STATUS_CHOICES,
-    )
-    timestamp = models.DateTimeField(auto_now=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
-    params = models.JSONField(default=dict)
+        self.data = m
+        return

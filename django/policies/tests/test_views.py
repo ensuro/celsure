@@ -55,6 +55,14 @@ def settings_pricing(settings):
     settings.DYNAMIC_PRICING_API_KEY = "insecure"
 
 
+@pytest.fixture
+def settings_motionscloud(settings):
+    settings.MOTIONSCLOUD_BASE_URL = "https://example.org/motionscloud"
+    settings.MOTIONSCLOUD_API_URL = "https://example.org/motionscloud/api"
+    settings.MOTIONSCLOUD_CLIENT_ID = "fake_client"
+    settings.MOTIONSCLOUD_CLIENT_SECRET = "fake_secret"
+
+
 def create_quote_response(model, expiration):
     """Create a quote and register a response for it in responses"""
     quote = {
@@ -89,12 +97,47 @@ def create_quote_response(model, expiration):
     return quote
 
 
+def create_motionscloud_api_response():
+    inspection = {
+        "uuid": "1af220a3-8a30-4dfc-b120-19006608643e",
+        "phone_inspections": [
+            {
+                "uuid": "fake_uuid",
+                "imei_number": "AA-BBBBBB-CCCCCC-D",
+                "kind": "policy_purchase",
+                "web_url": "https://ensuro-qa.motionscloud.com/phone_inspections/fake_uuid/guidelines",
+                "treatment": None,
+                "treatment_options": [],
+            }
+        ],
+    }
+    responses.post(
+        url=settings.MOTIONSCLOUD_API_URL + "/phone_inspections/case",
+        match=[
+            matchers.header_matcher({"Authorization": "Bearer insecure"}),
+        ],
+        json=inspection,
+    )
+    return inspection
+
+
+def create_auth_motionscloud_response():
+    auth = {"access_token": "insecure", "token_type": "Bearer", "expires_in": 3600, "created_at": 1671632939}
+    responses.post(
+        url=settings.MOTIONSCLOUD_BASE_URL + "/oauth/token",
+        json=auth,
+    )
+    return auth
+
+
 @pytest.mark.django_db
-def test_new_policy_form_post(client, logged_in_user, settings_pricing):
+def test_new_policy_form_post(client, logged_in_user, settings_pricing, settings_motionscloud):
     model = ModelFactory()
     # Request to the dynamic pricing api
     expiration = "2022-12-14T16:57:08.727839+00:00"
     quote = create_quote_response(model, expiration)
+    create_auth_motionscloud_response()
+    create_motionscloud_api_response()
 
     response = client.post(
         reverse("new_policy"),

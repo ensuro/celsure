@@ -1,5 +1,4 @@
 import datetime
-from dataclasses import dataclass
 
 import requests
 from django.conf import settings
@@ -7,21 +6,6 @@ from django.utils import timezone
 from oauth2_provider.models import AccessToken
 
 TOKEN = None
-
-
-@dataclass
-class Inspection:
-    uuid: str
-    phone_inspections: str
-
-    @classmethod
-    def from_json(cls, data):
-        ret = cls(
-            uuid=data["uuid"],
-            phone_inspections=data["phone_inspections"],
-        )
-        ret._data = data
-        return ret
 
 
 def create_access_token(token):
@@ -68,7 +52,7 @@ def request_inspection(session, phone_status, phone_number, imei_number, brand, 
         },
     )
     response.raise_for_status()
-    return Inspection.from_json(response.json())
+    return response.json()
 
 
 def get_inspection(session, uuid):
@@ -76,4 +60,4 @@ def get_inspection(session, uuid):
         f"{settings.MOTIONSCLOUD_API_URL}/phone_inspections/assessment?uuid={uuid}",
     )
     response.raise_for_status()
-    return Inspection.from_json(response.json())
+    return response.json()

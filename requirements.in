@@ -10,3 +10,4 @@ django-phonenumber-field[phonenumberslite]
 django-colorfield
 django-bootstrap-v5
 whitenoise
+django-fsm

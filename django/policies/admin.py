@@ -16,12 +16,6 @@ class PolicyAdmin(admin.ModelAdmin):
     list_filter = ("model", "status", "expiration")
 
 
-class PolicyActivityAdmin(admin.ModelAdmin):
-    list_display = ("policy", "status_from", "status_to", "user", "params")
-    list_filter = ("status_from", "status_to", "timestamp")
-
-
 admin.site.register(models.Brand, BrandAdmin)
 admin.site.register(models.Model, ModelAdmin)
 admin.site.register(models.Policy, PolicyAdmin)
-admin.site.register(models.PolicyActivity, PolicyActivityAdmin)
