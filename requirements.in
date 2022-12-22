@@ -9,3 +9,4 @@ rollbar
 django-phonenumber-field[phonenumberslite]
 django-colorfield
 django-bootstrap-v5
+whitenoise
