@@ -11,3 +11,4 @@ django-colorfield
 django-bootstrap-v5
 whitenoise
 django-fsm
+django-fsm-log

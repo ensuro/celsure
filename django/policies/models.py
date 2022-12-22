@@ -2,6 +2,7 @@ from colorfield.fields import ColorField
 from django.core.exceptions import ValidationError
 from django.db import models
 from django_fsm import FSMField, transition
+from django_fsm_log.decorators import fsm_log_by
 from phonenumber_field.modelfields import PhoneNumberField
 
 from celsure import motionscloud
@@ -110,6 +111,7 @@ class Policy(models.Model):
     quote = models.JSONField(null=True)
     data = models.JSONField(default=dict)
 
+    @fsm_log_by
     @transition(field=status, source="pending", target="policy_requested")
     def policy_request(self):
         session = motionscloud.get_authenticated_session()
@@ -118,4 +120,10 @@ class Policy(models.Model):
         )
 
         self.data = m
+        return
+
+    @fsm_log_by
+    @transition(field=status, source="policy_requested", target="policy_confirmed")
+    def confirm_policy(self):
+        # Do something
         return
