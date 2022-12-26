@@ -103,7 +103,7 @@ def create_motionscloud_api_response():
         "phone_inspections": [
             {
                 "uuid": "fake_uuid",
-                "imei_number": "AA-BBBBBB-CCCCCC-D",
+                "imei_number": "356938035643809",
                 "kind": "policy_purchase",
                 "web_url": "https://ensuro-qa.motionscloud.com/phone_inspections/fake_uuid/guidelines",
                 "treatment": None,

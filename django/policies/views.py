@@ -90,6 +90,7 @@ class PolicyViewSet(viewsets.ModelViewSet):
             )
 
         policy = get_object_or_404(Policy, imei=inspection["phone_inspections"][0]["imei_number"])
+        policy.data = inspection
 
         if event.imei != policy.imei:
             logger.warning(
