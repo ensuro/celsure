@@ -1,4 +1,5 @@
 import datetime
+from dataclasses import dataclass
 
 import requests
 from django.conf import settings
@@ -6,6 +7,21 @@ from django.utils import timezone
 from oauth2_provider.models import AccessToken
 
 TOKEN = None
+
+
+@dataclass
+class Event:
+    uuid: str
+    imei: str
+    phone_inspections: str
+
+    @classmethod
+    def from_json(cls, data):
+        return cls(
+            uuid=data["data"]["uuid"],
+            imei=data["data"]["phone_inspections"][0]["imei_number"],
+            phone_inspections=data["data"]["phone_inspections"],
+        )
 
 
 def create_access_token(token):

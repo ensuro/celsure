@@ -2,9 +2,21 @@ import pytest
 import responses
 from django.conf import settings
 from django.urls import reverse
+from pytest_django.asserts import assertTemplateUsed
 from responses import matchers
 
 from policies.factories import Model as ModelFactory
+from policies.models import Policy
+
+
+@pytest.fixture
+@pytest.mark.django_db
+def logged_in_user(django_user_model, client):
+    username = "user1"
+    password = "bar"
+    user = django_user_model.objects.create_user(username=username, password=password)
+    client.force_login(user)
+    return user
 
 
 @pytest.fixture(scope="module")
@@ -71,7 +83,7 @@ def create_motionscloud_api_response():
         "phone_inspections": [
             {
                 "uuid": "fake_uuid",
-                "imei_number": "AA-BBBBBB-CCCCCC-D",
+                "imei_number": "356938035643809",
                 "kind": "policy_purchase",
                 "web_url": "https://ensuro-qa.motionscloud.com/phone_inspections/fake_uuid/guidelines",
                 "treatment": None,
@@ -100,7 +112,7 @@ def create_auth_motionscloud_response():
 
 @pytest.mark.vcr
 @pytest.mark.django_db
-def test_request_inspection(client, settings_pricing, settings_motionscloud):
+def test_request_inspection(client, vcr, logged_in_user, settings_pricing, settings_motionscloud):
     model = ModelFactory()
     # Request to the dynamic pricing api
     expiration = "2022-12-14T16:57:08.727839+00:00"
@@ -120,10 +132,47 @@ def test_request_inspection(client, settings_pricing, settings_motionscloud):
         follow=True,
     )
     assert response.status_code == 200
+    assertTemplateUsed(response, "feedback/policy_created.html")
 
-    assert inspection["uuid"] is not None
-    assert inspection["phone_inspections"] is not None
+    assert Policy.objects.count() == 1
+    policy = Policy.objects.get()
+    assert policy.payout == model.fix_price
+    assert policy.status == "policy_requested"
+
+    assert inspection["uuid"] == policy.data["uuid"]
+    assert inspection["phone_inspections"] == policy.data["phone_inspections"]
 
     assert inspection["phone_inspections"].__len__() == 1  # only policy_purchase
     assert inspection["phone_inspections"][0]["kind"] == "policy_purchase"
-    assert inspection["phone_inspections"][0]["imei_number"] == "AA-BBBBBB-CCCCCC-D"
+    assert inspection["phone_inspections"][0]["imei_number"] == policy.imei
+
+
+@pytest.mark.vcr
+@pytest.mark.django_db
+def test_confirm_inspection(client, vcr, logged_in_user, settings_pricing, settings_motionscloud):
+    model = ModelFactory()
+    # Request to the dynamic pricing api
+    expiration = "2022-12-14T16:57:08.727839+00:00"
+    create_quote_response(model, expiration)
+    create_auth_motionscloud_response()
+    create_motionscloud_api_response()
+
+    response = client.post(
+        reverse("new_policy"),
+        {
+            "model": model.code,
+            "phone_color": "#000000",
+            "imei": "356938035643809",
+            "phone_number": "+541112345678",
+            "expiration": expiration,
+        },
+        follow=True,
+    )
+    assert response.status_code == 200
+    assert Policy.objects.count() == 1
+    policy = Policy.objects.get()
+    assert policy.payout == model.fix_price
+    assert policy.status == "policy_requested"
+
+    policy.confirm_policy()
+    assert policy.status == "policy_confirmed"

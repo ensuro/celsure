@@ -137,7 +137,7 @@ def test_new_policy_form_post(client, logged_in_user, settings_pricing, settings
     expiration = "2022-12-14T16:57:08.727839+00:00"
     quote = create_quote_response(model, expiration)
     create_auth_motionscloud_response()
-    create_motionscloud_api_response()
+    inspection = create_motionscloud_api_response()
 
     response = client.post(
         reverse("new_policy"),
@@ -157,6 +157,11 @@ def test_new_policy_form_post(client, logged_in_user, settings_pricing, settings
     policy = Policy.objects.get()
     assert policy.payout == model.fix_price
     assert policy.quote == quote
+
+    assert policy.status == "policy_requested"
+    assert policy.imei == inspection["phone_inspections"][0]["imei_number"]
+    assert policy.data["uuid"] == inspection["uuid"]
+    assert policy.data["phone_inspections"] == inspection["phone_inspections"]
 
 
 @pytest.mark.django_db

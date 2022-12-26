@@ -15,8 +15,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+from rest_framework import routers
 
 from policies import views
+
+router = routers.DefaultRouter()
+router.register(r"celsure", views.PolicyViewSet)
+
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -24,4 +29,5 @@ urlpatterns = [
     path("accounts/", include("django.contrib.auth.urls")),
     path("new_policy/", views.new_policy, name="new_policy"),
     path("price_policy/", views.price_policy, name="price_policy"),
+    path("api/", include(router.urls)),
 ]

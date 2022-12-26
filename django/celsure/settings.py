@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     "oauth2_provider",
     "django_fsm",
     "django_fsm_log",
+    "rest_framework",
 ]
 
 INSTALLED_APPS.extend(env.list("EXTRA_INSTALLED_APPS", []))
