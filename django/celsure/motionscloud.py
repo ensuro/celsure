@@ -13,14 +13,12 @@ TOKEN = None
 class Event:
     uuid: str
     imei: str
-    phone_inspections: str
 
     @classmethod
     def from_json(cls, data):
         return cls(
             uuid=data["data"]["uuid"],
-            imei=data["data"]["phone_inspections"][0]["imei_number"],
-            phone_inspections=data["data"]["phone_inspections"],
+            imei=data["data"]["imei_number"],
         )
 
 
