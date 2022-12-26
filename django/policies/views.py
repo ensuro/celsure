@@ -83,6 +83,12 @@ class PolicyViewSet(viewsets.ModelViewSet):
 
         session = get_authenticated_session()
         inspection = get_inspection(session, event.uuid)
+        if inspection is None or inspection["phone_inspections"][0]["treatment"] != "Approved":
+            return Response(
+                data={"error_type": "bad event"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         policy = get_object_or_404(Policy, imei=inspection["phone_inspections"][0]["imei_number"])
 
         if event.imei != policy.imei:
