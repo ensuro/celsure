@@ -22,7 +22,7 @@ def logged_in_user(django_user_model, client):
 @pytest.fixture(scope="module")
 def vcr_config():
     return {
-        "match_on": ["api_body", "uri_regex"],
+        "match_on": ["body", "uri_regex"],
         "allow_playback_repeats": True,
         "filter_post_data_parameters": [("client_id", "ID_TEST"), ("client_secret", "SECRET_TEST")],
         "filter_headers": [("Authorization", "DUMMY")],
@@ -142,7 +142,7 @@ def test_request_inspection(client, vcr, logged_in_user, settings_pricing, setti
     assert inspection["uuid"] == policy.data["uuid"]
     assert inspection["phone_inspections"] == policy.data["phone_inspections"]
 
-    assert inspection["phone_inspections"].__len__() == 1  # only policy_purchase
+    assert len(inspection["phone_inspections"]) == 1
     assert inspection["phone_inspections"][0]["kind"] == "policy_purchase"
     assert inspection["phone_inspections"][0]["imei_number"] == policy.imei
 

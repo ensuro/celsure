@@ -3,9 +3,12 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django_fsm import FSMField, transition
 from django_fsm_log.decorators import fsm_log_by
+from ensuro.contracts import register_contract_path
 from phonenumber_field.modelfields import PhoneNumberField
 
 from celsure import motionscloud
+
+register_contract_path()
 
 
 # Took from https://github.com/mmcloughlin/luhn/blob/master/luhn.py
@@ -115,11 +118,11 @@ class Policy(models.Model):
     @transition(field=status, source="pending", target="policy_requested")
     def policy_request(self):
         session = motionscloud.get_authenticated_session()
-        m = motionscloud.request_inspection(
+        inspection = motionscloud.request_inspection(
             session, "policy_purchase", self.phone_number.as_e164, self.imei, self.model.brand.name
         )
 
-        self.data = m
+        self.data.update(inspection)
         return
 
     @fsm_log_by

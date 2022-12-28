@@ -6,10 +6,5 @@ from .models import Policy
 class PolicySerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Policy
-        fields = [
-            "imei",
-            "status",
-            "email",
-            "data",
-        ]
+        fields = ["imei", "data"]
         read_only_fields = ["status"]
