@@ -20,18 +20,20 @@ def new_policy(rm_address, model, expiration):
     quote = get_quote(model=model, expiration=expiration, signed=True)
     eth_rm = wrappers.SignedQuoteRiskModule.connect(rm_address)
     customer = env.str("CUSTOMER_ADDRESS")
+    from_address = env.str("REPLICATOR_ADDRESS")
 
-    receipt = eth_rm.new_policy_(
-        _A(model.fix_price),
-        _A(quote["premium"]) if quote["premium"] is not None else None,
-        _W(quote["loss_prob"]),
-        quote["expiration"],
-        customer,
-        quote["data_hash"],
-        quote["signature"]["r"],
-        quote["signature"]["vs"],
-        quote["valid_until"],
-    )
+    with eth_rm.as_(from_address):
+        receipt = eth_rm.new_policy_(
+            _A(model.fix_price),
+            _A(quote["premium"]) if quote["premium"] is not None else None,
+            _W(quote["loss_prob"]),
+            quote["expiration"],
+            customer,
+            quote["data_hash"],
+            quote["signature"]["r"],
+            quote["signature"]["vs"],
+            quote["valid_until"],
+        )
 
     logger.info(f"Policy created, receipt: {receipt}")
     return receipt
