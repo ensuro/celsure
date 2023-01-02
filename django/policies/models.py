@@ -136,8 +136,13 @@ class Policy(models.Model):
 
     @fsm_log_by
     @transition(field=status, source="inspection_requested", target="inspection_confirmed")
-    def confirm_inspection(self):
-        return
+    def confirm_inspection(self, uuid):
+        session = motionscloud.get_authenticated_session()
+        inspection = motionscloud.get_inspection(session, uuid)
+        if inspection is None or inspection["phone_inspections"][0]["treatment"] != "Approved":
+            raise ValidationError("Error Type: Bad Event")
+
+        return inspection
 
     @fsm_log_by
     @transition(field=status, source="inspection_confirmed", target="policy_created")
@@ -146,7 +151,7 @@ class Policy(models.Model):
         quote = get_quote(model=self.model, expiration=self.expiration, signed=True)
         eth_rm = wrappers.SignedQuoteRiskModule.connect(env.str("CELSURE_RM_ADDRESS"))
         customer = env.str("CUSTOMER_ADDRESS")
-        from_address = env.str("REPLICATOR_ADDRESS")
+        from_address = env.str("RELAY_ADDRESS")
 
         with eth_rm.as_(from_address):
             receipt = eth_rm.new_policy_(

@@ -1,3 +1,4 @@
+# Copied from ens-offchain repo - TODO: create a library
 import os
 from contextlib import contextmanager
 from datetime import datetime

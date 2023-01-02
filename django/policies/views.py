@@ -11,7 +11,7 @@ from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from celsure.motionscloud import Event, get_authenticated_session, get_inspection
+from celsure.motionscloud import Event
 from policies import tasks
 
 from .forms import PolicyForm, PricingForm
@@ -82,11 +82,6 @@ class PolicyViewSet(viewsets.ModelViewSet):
 
         policy = get_object_or_404(Policy, imei=event.imei)
 
-        session = get_authenticated_session()
-        inspection = get_inspection(session, event.uuid)
-        if inspection is None or inspection["phone_inspections"][0]["treatment"] != "Approved":
-            raise ValidationError("Error Type: Bad Event")
-
         if event.imei != policy.imei:
             logger.warning(
                 "Ignoring unknown policy update from motionscloud. imei=%s",
@@ -94,8 +89,8 @@ class PolicyViewSet(viewsets.ModelViewSet):
             )
             return Response(data={"status": "OK"})
 
+        inspection = policy.confirm_inspection(event.uuid)
         policy.data.update(inspection)
-        policy.confirm_inspection()
         policy.save()
 
         tasks.new_policy.delay(imei=policy.imei)

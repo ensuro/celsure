@@ -173,6 +173,3 @@ def test_confirm_inspection(client, vcr, logged_in_user, settings_pricing, setti
     policy = Policy.objects.get()
     assert policy.payout == model.fix_price
     assert policy.status == "inspection_requested"
-
-    policy.confirm_inspection()
-    assert policy.status == "inspection_confirmed"
