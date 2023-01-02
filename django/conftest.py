@@ -5,6 +5,11 @@ from rest_framework.test import APIClient
 from vcr import matchers
 
 
+@pytest.fixture(autouse=True)
+def mock_register_contract_path(mocker):
+    mocker.patch("policies.apps", "register_contract_path", lambda: None)
+
+
 @pytest.fixture
 def api_client():
     return APIClient()
