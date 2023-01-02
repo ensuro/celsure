@@ -6,7 +6,6 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django_fsm import FSMField, transition
 from django_fsm_log.decorators import fsm_log_by
-from ensuro.contracts import register_contract_path
 from environs import Env
 from ethproto.wadray import _W
 from ethproto.wrappers import get_provider
@@ -15,8 +14,6 @@ from phonenumber_field.modelfields import PhoneNumberField
 from celsure import motionscloud
 from policies.ethutils import _A
 from policies.quote import get_quote
-
-register_contract_path()
 
 env = Env()
 
@@ -164,5 +161,6 @@ class Policy(models.Model):
                 quote["valid_until"],
             )
 
+        self.data["policy"] = {"data_hash": quote["data_hash"], "receipt": receipt}
         logger.info(f"Policy created, receipt: {receipt}")
         return
