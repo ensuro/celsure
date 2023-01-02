@@ -11,8 +11,8 @@ from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from celsure import tasks
 from celsure.motionscloud import Event, get_authenticated_session, get_inspection
+from policies import tasks
 
 from .forms import PolicyForm, PricingForm
 from .models import Policy
