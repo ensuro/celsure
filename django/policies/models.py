@@ -1,14 +1,26 @@
+import logging
+
+import ensuro.wrappers as wrappers
 from colorfield.fields import ColorField
 from django.core.exceptions import ValidationError
 from django.db import models
 from django_fsm import FSMField, transition
 from django_fsm_log.decorators import fsm_log_by
 from ensuro.contracts import register_contract_path
+from environs import Env
+from ethproto.wadray import _W
+from ethproto.wrappers import get_provider
 from phonenumber_field.modelfields import PhoneNumberField
 
 from celsure import motionscloud
+from policies.ethutils import _A
+from policies.quote import get_quote
 
 register_contract_path()
+
+env = Env()
+
+logger = logging.getLogger()
 
 
 # Took from https://github.com/mmcloughlin/luhn/blob/master/luhn.py
@@ -115,8 +127,8 @@ class Policy(models.Model):
     data = models.JSONField(default=dict)
 
     @fsm_log_by
-    @transition(field=status, source="pending", target="policy_requested")
-    def policy_request(self):
+    @transition(field=status, source="pending", target="inspection_requested")
+    def inspection_request(self):
         session = motionscloud.get_authenticated_session()
         inspection = motionscloud.request_inspection(
             session, "policy_purchase", self.phone_number.as_e164, self.imei, self.model.brand.name
@@ -126,7 +138,31 @@ class Policy(models.Model):
         return
 
     @fsm_log_by
-    @transition(field=status, source="policy_requested", target="policy_confirmed")
-    def confirm_policy(self):
-        # Do something
+    @transition(field=status, source="inspection_requested", target="inspection_confirmed")
+    def confirm_inspection(self):
+        return
+
+    @fsm_log_by
+    @transition(field=status, source="inspection_confirmed", target="policy_created")
+    def create_policy(self):
+        get_provider()
+        quote = get_quote(model=self.model, expiration=self.expiration, signed=True)
+        eth_rm = wrappers.SignedQuoteRiskModule.connect(env.str("CELSURE_RM_ADDRESS"))
+        customer = env.str("CUSTOMER_ADDRESS")
+        from_address = env.str("REPLICATOR_ADDRESS")
+
+        with eth_rm.as_(from_address):
+            receipt = eth_rm.new_policy_(
+                _A(self.model.fix_price),
+                _A(quote["premium"]) if quote["premium"] is not None else None,
+                _W(quote["loss_prob"]),
+                quote["expiration"],
+                customer,
+                quote["data_hash"],
+                quote["signature"]["r"],
+                quote["signature"]["vs"],
+                quote["valid_until"],
+            )
+
+        logger.info(f"Policy created, receipt: {receipt}")
         return

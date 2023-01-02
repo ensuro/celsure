@@ -137,7 +137,7 @@ def test_request_inspection(client, vcr, logged_in_user, settings_pricing, setti
     assert Policy.objects.count() == 1
     policy = Policy.objects.get()
     assert policy.payout == model.fix_price
-    assert policy.status == "policy_requested"
+    assert policy.status == "inspection_requested"
 
     assert inspection["uuid"] == policy.data["uuid"]
     assert inspection["phone_inspections"] == policy.data["phone_inspections"]
@@ -172,7 +172,7 @@ def test_confirm_inspection(client, vcr, logged_in_user, settings_pricing, setti
     assert Policy.objects.count() == 1
     policy = Policy.objects.get()
     assert policy.payout == model.fix_price
-    assert policy.status == "policy_requested"
+    assert policy.status == "inspection_requested"
 
-    policy.confirm_policy()
-    assert policy.status == "policy_confirmed"
+    policy.confirm_inspection()
+    assert policy.status == "inspection_confirmed"

@@ -158,7 +158,7 @@ def test_new_policy_form_post(client, logged_in_user, settings_pricing, settings
     assert policy.payout == model.fix_price
     assert policy.quote == quote
 
-    assert policy.status == "policy_requested"
+    assert policy.status == "inspection_requested"
     assert policy.imei == inspection["phone_inspections"][0]["imei_number"]
     assert policy.data["uuid"] == inspection["uuid"]
     assert policy.data["phone_inspections"] == inspection["phone_inspections"]

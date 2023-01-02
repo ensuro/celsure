@@ -36,7 +36,7 @@ class PolicyForm(forms.ModelForm):
         if commit:
             ret.save()
 
-        ret.policy_request()
+        ret.inspection_request()
         if commit:
             ret.save()
         return ret

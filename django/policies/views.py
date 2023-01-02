@@ -11,6 +11,7 @@ from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from celsure import tasks
 from celsure.motionscloud import Event, get_authenticated_session, get_inspection
 
 from .forms import PolicyForm, PricingForm
@@ -94,7 +95,9 @@ class PolicyViewSet(viewsets.ModelViewSet):
             return Response(data={"status": "OK"})
 
         policy.data.update(inspection)
-        policy.confirm_policy()
+        policy.confirm_inspection()
         policy.save()
+
+        tasks.new_policy.delay(imei=policy.imei)
 
         return Response(data={"status": "OK"})
