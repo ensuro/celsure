@@ -1,8 +1,23 @@
+import logging
+
+import ensuro.wrappers as wrappers
 from colorfield.fields import ColorField
-from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
+from django_fsm import FSMField, transition
+from django_fsm_log.decorators import fsm_log_by
+from environs import Env
+from ethproto.wadray import _W
+from ethproto.wrappers import get_provider
 from phonenumber_field.modelfields import PhoneNumberField
+
+from celsure import motionscloud
+from policies.ethutils import _A
+from policies.quote import get_quote
+
+env = Env()
+
+logger = logging.getLogger()
 
 
 # Took from https://github.com/mmcloughlin/luhn/blob/master/luhn.py
@@ -103,24 +118,54 @@ class Policy(models.Model):
     payout = models.DecimalField(decimal_places=2, max_digits=12)
 
     expiration = models.DateTimeField()
-
-    status = models.CharField(
-        max_length=20, choices=STATUS_CHOICES, default="pending", help_text="Tracks the status of the policy"
-    )
+    status = FSMField(default="pending")
 
     quote = models.JSONField(null=True)
+    data = models.JSONField(default=dict)
 
+    @fsm_log_by
+    @transition(field=status, source="pending", target="inspection_requested")
+    def inspection_request(self):
+        session = motionscloud.get_authenticated_session()
+        inspection = motionscloud.request_inspection(
+            session, "policy_purchase", self.phone_number.as_e164, self.imei, self.model.brand.name
+        )
 
-class PolicyActivity(models.Model):
-    policy = models.ForeignKey(Policy, on_delete=models.CASCADE, related_name="activities")
-    status_from = models.CharField(
-        max_length=20,
-        choices=STATUS_CHOICES,
-    )
-    status_to = models.CharField(
-        max_length=20,
-        choices=STATUS_CHOICES,
-    )
-    timestamp = models.DateTimeField(auto_now=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
-    params = models.JSONField(default=dict)
+        self.data.update(inspection)
+        return
+
+    @fsm_log_by
+    @transition(field=status, source="inspection_requested", target="inspection_confirmed")
+    def confirm_inspection(self, uuid):
+        session = motionscloud.get_authenticated_session()
+        inspection = motionscloud.get_inspection(session, uuid)
+        if inspection is None or inspection["phone_inspections"][0]["treatment"] != "Approved":
+            raise ValidationError("Error Type: Bad Event")
+
+        return inspection
+
+    @fsm_log_by
+    @transition(field=status, source="inspection_confirmed", target="policy_created")
+    def create_policy(self):
+        get_provider()
+        quote = get_quote(model=self.model, expiration=self.expiration, signed=True)
+        eth_rm = wrappers.SignedQuoteRiskModule.connect(env.str("CELSURE_RM_ADDRESS"))
+        customer = env.str("CUSTOMER_ADDRESS")
+        from_address = env.str("RELAY_ADDRESS")
+
+        with eth_rm.as_(from_address):
+            receipt = eth_rm.new_policy_(
+                _A(self.model.fix_price),
+                _A(quote["premium"]) if quote["premium"] is not None else None,
+                _W(quote["loss_prob"]),
+                quote["expiration"],
+                customer,
+                quote["data_hash"],
+                quote["signature"]["r"],
+                quote["signature"]["vs"],
+                quote["valid_until"],
+            )
+
+        self.data["policy"] = {"data_hash": quote["data_hash"], "receipt": receipt}
+        logger.info(f"Policy created, receipt: {receipt}")
+        return

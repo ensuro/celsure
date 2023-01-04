@@ -4,6 +4,7 @@ pytest-django
 pytest-mock
 pytest-cov
 pytest-responses
+pytest-recording
 factory_boy
 freezegun
 colorama

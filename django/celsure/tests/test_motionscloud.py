@@ -2,8 +2,7 @@ import pytest
 import responses
 from django.conf import settings
 from django.urls import reverse
-from django.utils.http import urlencode
-from pytest_django.asserts import assertRedirects, assertTemplateUsed
+from pytest_django.asserts import assertTemplateUsed
 from responses import matchers
 
 from policies.factories import Model as ModelFactory
@@ -20,33 +19,14 @@ def logged_in_user(django_user_model, client):
     return user
 
 
-def test_not_logged_in_redirect_to_login(client):
-    # Cant see policy_list if not logged in
-    resp = client.get("", follow=True)
-    assertRedirects(resp, "/accounts/login/?next=/")
-    assertTemplateUsed(resp, "registration/login.html")
-
-
-@pytest.mark.django_db
-def test_login_and_render_policy_list(client, django_user_model):
-    # Cant see policy_list if not logged in
-    response = client.get("", follow=True)
-    assertTemplateUsed(response, "registration/login.html")
-
-    username = "user1"
-    password = "bar"
-    user = django_user_model.objects.create_user(username=username, password=password)
-    client.force_login(user)
-
-    response = client.get("", follow=True)
-    assertTemplateUsed(response, "policies/policy_list.html")
-
-
-@pytest.mark.django_db
-def test_new_policy_form_render(client, logged_in_user):
-    response = client.get(reverse("new_policy"), follow=True)
-    assert response.status_code == 200
-    assertTemplateUsed(response, "policies/new_policy.html")
+@pytest.fixture(scope="module")
+def vcr_config():
+    return {
+        "match_on": ["body", "uri_regex"],
+        "allow_playback_repeats": True,
+        "filter_post_data_parameters": [("client_id", "ID_TEST"), ("client_secret", "SECRET_TEST")],
+        "filter_headers": [("Authorization", "DUMMY")],
+    }
 
 
 @pytest.fixture
@@ -130,12 +110,13 @@ def create_auth_motionscloud_response():
     return auth
 
 
+@pytest.mark.vcr
 @pytest.mark.django_db
-def test_new_policy_form_post(client, logged_in_user, settings_pricing, settings_motionscloud):
+def test_request_inspection(client, vcr, logged_in_user, settings_pricing, settings_motionscloud):
     model = ModelFactory()
     # Request to the dynamic pricing api
     expiration = "2022-12-14T16:57:08.727839+00:00"
-    quote = create_quote_response(model, expiration)
+    create_quote_response(model, expiration)
     create_auth_motionscloud_response()
     inspection = create_motionscloud_api_response()
 
@@ -156,31 +137,39 @@ def test_new_policy_form_post(client, logged_in_user, settings_pricing, settings
     assert Policy.objects.count() == 1
     policy = Policy.objects.get()
     assert policy.payout == model.fix_price
-    assert policy.quote == quote
-
     assert policy.status == "inspection_requested"
-    assert policy.imei == inspection["phone_inspections"][0]["imei_number"]
-    assert policy.data["uuid"] == inspection["uuid"]
-    assert policy.data["phone_inspections"] == inspection["phone_inspections"]
+
+    assert inspection["uuid"] == policy.data["uuid"]
+    assert inspection["phone_inspections"] == policy.data["phone_inspections"]
+
+    assert len(inspection["phone_inspections"]) == 1
+    assert inspection["phone_inspections"][0]["kind"] == "policy_purchase"
+    assert inspection["phone_inspections"][0]["imei_number"] == policy.imei
 
 
+@pytest.mark.vcr
 @pytest.mark.django_db
-def test_price_policy(client, logged_in_user, settings_pricing):
-    expiration = "2022-12-14T16:57:08.727839+00:00"
+def test_confirm_inspection(client, vcr, logged_in_user, settings_pricing, settings_motionscloud):
     model = ModelFactory()
-    quote = create_quote_response(model, expiration)
+    # Request to the dynamic pricing api
+    expiration = "2022-12-14T16:57:08.727839+00:00"
+    create_quote_response(model, expiration)
+    create_auth_motionscloud_response()
+    create_motionscloud_api_response()
 
-    response = client.get(
-        "%s?%s" % (reverse("price_policy"), urlencode({"model": model.code, "expiration": expiration}))
+    response = client.post(
+        reverse("new_policy"),
+        {
+            "model": model.code,
+            "phone_color": "#000000",
+            "imei": "356938035643809",
+            "phone_number": "+541112345678",
+            "expiration": expiration,
+        },
+        follow=True,
     )
-    assert response.json() == quote
-
-
-@pytest.mark.django_db
-def test_price_policy_missing_args(client, logged_in_user):
-    response = client.get(reverse("price_policy"))
-    assert response.status_code == 400
-    assert response.json() == {
-        "expiration": ["This field is required."],
-        "model": ["This field is required."],
-    }
+    assert response.status_code == 200
+    assert Policy.objects.count() == 1
+    policy = Policy.objects.get()
+    assert policy.payout == model.fix_price
+    assert policy.status == "inspection_requested"

@@ -29,11 +29,16 @@ class PolicyForm(forms.ModelForm):
 
         quote = get_quote(ret.model, ret.expiration, signed=False)
         ret.quote = quote
-        ret.premium = quote["premium"]
+        ret.premium = (
+            quote["premium"] if quote["premium"] is not None else quote["premium_details"]["minimum_premium"]
+        )
 
         if commit:
             ret.save()
 
+        ret.inspection_request()
+        if commit:
+            ret.save()
         return ret
 
 

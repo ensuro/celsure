@@ -45,6 +45,12 @@ INSTALLED_APPS = [
     "policies",
     "phonenumber_field",
     "bootstrap5",
+    "oauthlib",
+    "oauth2_provider",
+    "django_fsm",
+    "django_fsm_log",
+    "rest_framework",
+    "django_celery_beat",
 ]
 
 INSTALLED_APPS.extend(env.list("EXTRA_INSTALLED_APPS", []))
@@ -177,3 +183,22 @@ if ROLLBAR_TOKEN:
 DYNAMIC_PRICING_URL = env.str("DYNAMIC_PRICING_URL", None)
 if DYNAMIC_PRICING_URL:
     DYNAMIC_PRICING_API_KEY = env.str("DYNAMIC_PRICING_API_KEY")
+
+
+# Motionscloud API
+MOTIONSCLOUD_BASE_URL = env.str("MOTIONSCLOUD_BASE_URL", "https://ensuro-qa.motionscloud.com")
+MOTIONSCLOUD_API_URL = env.str("MOTIONSCLOUD_API_URL", "https://ensuro-qa.motionscloud.com/api/v1")
+
+MOTIONSCLOUD_CLIENT_ID = env.str("MOTIONSCLOUD_CLIENT_ID")
+MOTIONSCLOUD_CLIENT_SECRET = env.str("MOTIONSCLOUD_CLIENT_SECRET")
+
+
+CELERY_BROKER_URL = env.str("CELERY_BROKER_URL", "redis://redis/0")
+CELERY_BROKER_TRANSPORT_OPTIONS = env.dict("CELERY_BROKER_TRANSPORT_OPTIONS", {})
+CELERY_DEFAULT_QUEUE = env.str("CELERY_DEFAULT_QUEUE", "celery")
+CELERY_TASK_DEFAULT_QUEUE = CELERY_DEFAULT_QUEUE  # It seems this is the correct variable
+
+
+ETHEREUM_NODE_URI = env.str("ETHEREUM_NODE_URI", env.str("WEB3_PROVIDER_URI", None))
+ETHEREUM_LOGS_FILTER_AVAILABLE = env.bool("ETHEREUM_LOGS_FILTER_AVAILABLE", True)
+ETHEREUM_LOGS_BATCH_SIZE = env.int("ETHEREUM_LOGS_BATCH_SIZE", 100000)

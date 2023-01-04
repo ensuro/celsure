@@ -1,0 +1,232 @@
+interactions:
+- request:
+    body: '{"phone_status": "functional", "phone_number": 1234567890, "imei_number":
+      "123456789012345", "brand": "Apple", "description": ""}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - DUMMY
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '129'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - python-requests/2.28.1
+    method: POST
+    uri: https://ensuro-qa.motionscloud.com/api/v1/phone_inspections/case
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA6SQy07DMBRE/+Wuc5uH7TjOr6Aq8uMaLBI7OLZYVP13REUREpsKdqNZjM6ZC9Qa
+        HMzA7dgbbQb01irkSnuchGdoGAk+aM2HyUAD+0uKtIR47GRLSPGA+ely3xiV6/pJGuTOC+SSS1RW
+        CGRK6MGSFXYkaCBsFJZYN0MZZugHxsUoJ9XdEjTwGuLnmiGfMi2Zdh0yNPBOZql5hRleStmPuW0p
+        HjUnfNOnLd1g7JqqO9m0tb8420fg2ucaHK0h0gENlEy6bBQLzLGu649iSftd/nxtvv2Z5GaQUiLp
+        SSBn/YRqpA5F37nREWedV4/7a18of+mT+/8Bj9D96YDz9QMAAP//AwAQzvyNRgIAAA==
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 77c8feb53a4f225d-MIA
+      Cache-Control:
+      - max-age=0, private, must-revalidate
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Tue, 20 Dec 2022 14:16:18 GMT
+      ETag:
+      - W/"47241e907d2c16bb4eeac281e3e3a5ad"
+      NEL:
+      - '{"success_fraction":0,"report_to":"cf-nel","max_age":604800}'
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Report-To:
+      - '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report\/v3?s=ZY%2FRpJqbZNKC0AtgNRX626Xu%2BpLCKLGtKgfaTcS1Wj65pGJFipBPgjsqlmZjOdXKe08vMVPkutiHwW2%2B4sVNbGhM2ZN6m0YJVv3mTsopYMksfoygoG7xgiHMEoNwhMdCpFMTXoFIkAjeS%2FPtug%3D%3D"}],"group":"cf-nel","max_age":604800}'
+      Server:
+      - cloudflare
+      Server-Timing:
+      - cf-q-config;dur=4.9999944167212e-06
+      Strict-Transport-Security:
+      - max-age=63072000; includeSubDomains
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept
+      X-Content-Type-Options:
+      - nosniff
+      - nosniff
+      X-Download-Options:
+      - noopen
+      X-Frame-Options:
+      - SAMEORIGIN
+      - DENY
+      X-Permitted-Cross-Domain-Policies:
+      - none
+      X-Request-Id:
+      - 952f3973-6daf-4b49-95e4-cf5b30b58e7a
+      X-Runtime:
+      - '0.021066'
+      X-XSS-Protection:
+      - '0'
+      - 1; mode=block
+      alt-svc:
+      - h3=":443"; ma=86400, h3-29=":443"; ma=86400
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - DUMMY
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.28.1
+    method: GET
+    uri: https://ensuro-qa.motionscloud.com/api/v1/phone_inspections/assessment?uuid=4c61bab2-fcc9-49af-85f3-b3e542aa428b
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA6SQy07DMBRE/+Wuc5uH7TjOr6Aq8uMaLBI7OLZYVP13REUREpsKdqNZjM6ZC9Qa
+        HMzA7dgbbQb01irkSnuchGdoGAk+aM2HyUAD+0uKtIR47GRLSPGA+ely3xiV6/pJGuTOC+SSS1RW
+        CGRK6MGSFXYkaCBsFJZYN0MZZugHxsUoJ9XdEjTwGuLnmiGfMi2Zdh0yNPBOZql5hRleStmPuW0p
+        HjUnfNOnLd1g7JqqO9m0tb8420fg2ucaHK0h0gENlEy6bBQLzLGu649iSftd/nxtvv2Z5GaQUiLp
+        SSBn/YRqpA5F37nREWedV4/7a18of+mT+/8Bj9D96YDz9QMAAP//AwAQzvyNRgIAAA==
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 77c8feba3cc9225d-MIA
+      Cache-Control:
+      - max-age=0, private, must-revalidate
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Tue, 20 Dec 2022 14:16:18 GMT
+      ETag:
+      - W/"47241e907d2c16bb4eeac281e3e3a5ad"
+      NEL:
+      - '{"success_fraction":0,"report_to":"cf-nel","max_age":604800}'
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Report-To:
+      - '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report\/v3?s=C%2BUNiCw8ovDfbSW6DOhRnsVCRMHh%2B6JiT%2BSwj%2FSkvg222EBpZEvPM37uXjZCrCuholB6edx1jOPXQoRVhM2qgDmjVpwwCShRT%2F%2Btctiv9IGz8XV0lxDRVoCg3HwfvfEZCHHACsdEW8UcB%2F2HeA%3D%3D"}],"group":"cf-nel","max_age":604800}'
+      Server:
+      - cloudflare
+      Server-Timing:
+      - cf-q-config;dur=5.0000089686364e-06
+      Strict-Transport-Security:
+      - max-age=63072000; includeSubDomains
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept
+      X-Content-Type-Options:
+      - nosniff
+      - nosniff
+      X-Download-Options:
+      - noopen
+      X-Frame-Options:
+      - SAMEORIGIN
+      - DENY
+      X-Permitted-Cross-Domain-Policies:
+      - none
+      X-Request-Id:
+      - df707845-09c9-47a2-afab-86c336e72711
+      X-Runtime:
+      - '0.009080'
+      X-XSS-Protection:
+      - '0'
+      - 1; mode=block
+      alt-svc:
+      - h3=":443"; ma=86400, h3-29=":443"; ma=86400
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - DUMMY
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.28.1
+    method: GET
+    uri: https://ensuro-qa.motionscloud.com/api/v1/phone_inspections/assessment?uuid=invalid_uuid
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA6pWSi0qyi9SslIKSi3OLy1KTlXIyy9RSMsvzUtRqgUAAAD//wMA5tk3Ch4AAAA=
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 77c8febe6b4a225d-MIA
+      Cache-Control:
+      - no-cache
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Tue, 20 Dec 2022 14:16:19 GMT
+      NEL:
+      - '{"success_fraction":0,"report_to":"cf-nel","max_age":604800}'
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Report-To:
+      - '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report\/v3?s=UdQxBmgkzPQzcQiTPW5roNJYcabl9Ne%2B6vYwL4lYLbgtopZfW16q%2BmM0XFeRyf3r6wZWIj7xbzs5yiI1yAyJP2UVlVQtlDyKw%2F3eBWX0f4EKInP9eqJC0sBvCPgY3OVQxhWXayoDqa1QzELTxg%3D%3D"}],"group":"cf-nel","max_age":604800}'
+      Server:
+      - cloudflare
+      Server-Timing:
+      - cf-q-config;dur=5.0000089686364e-06
+      Strict-Transport-Security:
+      - max-age=63072000; includeSubDomains
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept
+      X-Content-Type-Options:
+      - nosniff
+      X-Download-Options:
+      - noopen
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Permitted-Cross-Domain-Policies:
+      - none
+      X-Request-Id:
+      - 78c8bfcf-d49a-4f79-a87e-4deaac377d28
+      X-Runtime:
+      - '0.009645'
+      X-XSS-Protection:
+      - '0'
+      alt-svc:
+      - h3=":443"; ma=86400, h3-29=":443"; ma=86400
+    status:
+      code: 404
+      message: Not Found
+version: 1
