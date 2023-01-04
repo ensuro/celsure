@@ -6,6 +6,9 @@ on:
       - "*"
   workflow_dispatch:
 
+env:
+  WEB3_PROVIDER_URIL: ${{ secrets.ALCHEMY_URL }}
+
 jobs:
   test:
     runs-on: ubuntu-latest
