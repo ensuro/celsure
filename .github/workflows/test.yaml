@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 env:
-  WEB3_PROVIDER_URIL: ${{ secrets.ALCHEMY_URL }}
+  WEB3_PROVIDER_URI: ${{ secrets.ALCHEMY_URL }}
 
 jobs:
   test:
