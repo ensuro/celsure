@@ -80,7 +80,7 @@ class PolicyViewSet(viewsets.ModelViewSet):
             logger.error("Bad event received on webhook: %s: %s", e, request.data)
             raise ValidationError("Error Type: Bad Event")
 
-        policy = get_object_or_404(Policy, imei=event.imei)
+        policy = get_object_or_404(Policy, imei=event.imei, data__uuid=event.uuid)
 
         if event.imei != policy.imei:
             logger.warning(
@@ -93,6 +93,6 @@ class PolicyViewSet(viewsets.ModelViewSet):
         policy.data.update(inspection)
         policy.save()
 
-        tasks.new_policy.delay(imei=policy.imei)
+        tasks.new_policy.delay(imei=policy.imei, uuid=policy.data["uuid"])
 
         return Response(data={"status": "OK"})
